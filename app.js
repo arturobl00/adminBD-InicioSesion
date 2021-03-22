@@ -10,6 +10,8 @@
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
 
+  observador();
+
 
   function registrar(){
     console.log("Click en Registrar");
@@ -44,3 +46,58 @@
     });
   }
 
+function observador(){
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      // User is signed in, see docs for a list of available properties
+      // https://firebase.google.com/docs/reference/js/firebase.User
+      var uid = user.uid;
+      var email = user.email;
+      console.log("Login de idUsuario: ",uid, ", email: ",email);
+      // ...
+    } else {
+      // User is signed out
+      // ...
+      console.log("Usuario sin iniciar sesion");
+    }
+  });
+}
+
+function ingresar(){
+  console.log("Click en Ingresar");
+
+  var email = document.getElementById('emailI').value;
+  var password = document.getElementById('passwordI').value;
+
+  firebase.auth().signInWithEmailAndPassword(email, password)
+  .then((user) => {
+    // Signed in
+    // ...
+    console.log("El usuario inicio sesion");
+    mostrar();
+  })
+  .catch((error) => {
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    console.log(errorCode);
+    console.log(errorMessage);
+  });
+}
+
+function cerrar(){
+  firebase.auth().signOut().then(() => {
+    // Sign-out successful.
+    window.location.reload();
+    console.log("Sesion Cerrada");
+  }).catch((error) => {
+    // An error happened.
+    console.log(error);
+  });
+}
+
+function mostrar(){
+  var mostrar = document.getElementById('mostrar');
+  mostrar.innerHTML = `
+  <br/>
+  <button class="btn btn-danger" onclick="cerrar()">Cerrar Sesion</button>`
+}
